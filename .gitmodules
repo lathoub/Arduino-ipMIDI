@@ -4,3 +4,6 @@
 [submodule "src/dd"]
 	path = src/dd
 	url = https://github.com/lathoub/AbstractMIDIinterface
+[submodule "src/interface"]
+	path = src/interface
+	url = https://github.com/lathoub/AbstractMIDIinterface
