@@ -7,3 +7,6 @@
 [submodule "src/interface"]
 	path = src/interface
 	url = https://github.com/lathoub/AbstractMIDIinterface
+[submodule "src/common"]
+	path = src/common
+	url = https://github.com/lathoub/midi-Common

@@ -7,7 +7,7 @@
 #include "utility/ipMIDI_Settings.h"
 #include "utility/ipMIDI_Defs.h"
 
-#include "interface/midiCommon.h"
+#include "common/midiCommon.h"
 using namespace Midi;
 
 BEGIN_IPMIDI_NAMESPACE
