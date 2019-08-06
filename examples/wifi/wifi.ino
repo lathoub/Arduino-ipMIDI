@@ -55,7 +55,7 @@ void setup()
   Serial.print("IP address is ");
   Serial.println(WiFi.localIP());
 
-  ipm.begin("hehe");
+  ipm.begin();
 
   ipm.setHandleNoteOn(OnBleMidiNoteOn);
   ipm.setHandleNoteOff(OnBleMidiNoteOff);

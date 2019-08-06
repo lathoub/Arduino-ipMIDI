@@ -18,6 +18,7 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
+  Serial.println("Booting");
 
   // start Ethernet and UDP
   if (Ethernet.begin(mac) == 0) {
@@ -38,7 +39,7 @@ void setup()
   Serial.print(F("IP address is "));
   Serial.println(Ethernet.localIP());
 
-  ipm.begin("hehe");
+  ipm.begin();
 
   ipm.setHandleNoteOn(OnBleMidiNoteOn);
   ipm.setHandleNoteOff(OnBleMidiNoteOff);
@@ -51,10 +52,9 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  ipm.read();
+  //ipm.read();
 
   ipm.sendNoteOn(60, 127, 1);
-
   delay(1000);
 }
 

@@ -7,13 +7,13 @@
 #include "utility/ipMIDI_Settings.h"
 #include "utility/ipMIDI_Defs.h"
 
-#include "interface/AbstractMidiInterface.h"
+#include "interface/midiCommon.h"
 using namespace Midi;
 
 BEGIN_IPMIDI_NAMESPACE
 
 template<class UdpClass>
-class ipMIDIinterface : public AbstractMidiInterface
+class ipMIDIinterface : public MidiCommonInterface
 {
 protected:
 	UdpClass _dataPort;
@@ -24,7 +24,7 @@ protected:
 	byte _packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
 protected:
-	void write(DataByte b1)
+	virtual void write(DataByte b1)
 	{
 		Serial.println(F("write(1) "));
 
@@ -32,8 +32,7 @@ protected:
 		_dataPort.write(b1);
 		_dataPort.endPacket();
 	};
-
-	void write(DataByte b1, DataByte b2)
+	virtual void write(DataByte b1, DataByte b2)
 	{
 		const uint8_t data[2] = { b1, b2 };
 
@@ -43,8 +42,7 @@ protected:
 		_dataPort.write(data, 2);
 		_dataPort.endPacket();
 	};
-
-	void write(DataByte b1, DataByte b2, DataByte b3)
+	virtual void write(DataByte b1, DataByte b2, DataByte b3)
 	{
 		const uint8_t data[3] = { b1, b2, b3 };
 
@@ -58,54 +56,38 @@ protected:
 		_dataPort.endPacket();
 	};
 
-	void sendMIDI(StatusByte, DataByte data1 = 0, DataByte data2 = 0);
-	void receive(uint8_t *buffer, uint8_t bufferSize);
+	virtual void sendMIDI(StatusByte, DataByte data1 = 0, DataByte data2 = 0);
+	virtual void receive(uint8_t *buffer, uint8_t bufferSize);
 
 public:
 	ipMIDIinterface()
 	{
-		_multiIP = IPAddress{ 225, 0, 0, 37 };
-		_port = 21928;
+		// fixed, part of the protocol
+		_multiIP = IPAddress{ 225, 0, 0, 37 }; 
+		// can be modified by 'begin'
+		_port = 21928; 
 	}
 
-	~ipMIDIinterface()
+	virtual ~ipMIDIinterface()
 	{
 	}
 
-	// TODO why must these functions be inline??
-
-	inline bool begin(const char* deviceName);
+	inline bool begin(const uint16_t port = 21928)
+	{
+		_port = port;
+		return (_dataPort.beginMulticast(_multiIP, _port));
+	}
 
 	inline void read()
 	{
 		auto packetSize = _dataPort.parsePacket();
-
-		Serial.println();
-		Serial.print(F("parsePacket "));
-		Serial.println(packetSize);
-
-
 		if (packetSize) {
 			packetSize = _dataPort.read(_packetBuffer, sizeof(_packetBuffer));
-
-			Serial.println();
-			Serial.print(F("read "));
-			Serial.println(packetSize);
 
 			receive(_packetBuffer, packetSize);
 		}
 	}
 };
-
-template<class UdpClass>
-bool ipMIDIinterface<UdpClass>::begin(const char* deviceName)
-{
-	auto tt = _dataPort.beginMulticast(_multiIP, _port);
-	Serial.print (F("beginMulticast "));
-	Serial.println(tt);
-
-	return true;
-}
 
 template<class UdpClass>
 void ipMIDIinterface<UdpClass>::sendMIDI(StatusByte status, DataByte data1, DataByte data2)
@@ -191,9 +173,6 @@ void ipMIDIinterface<UdpClass>::receive(uint8_t *buffer, uint8_t bufferSize)
 	//lastStatus used to capture runningStatus
 	uint8_t lastStatus;
 
-	//Decode first packet -- SHALL be "Full MIDI message"
-	lPtr = 2; //Start at first MIDI status -- SHALL be "MIDI status"
-
 	//While statement contains incrementing pointers and breaks when buffer size exceeded.
 	while (1) {
 		lastStatus = buffer[lPtr];
@@ -201,11 +180,13 @@ void ipMIDIinterface<UdpClass>::receive(uint8_t *buffer, uint8_t bufferSize)
 			//Status message not present, bail
 			return;
 		}
+
 		//Point to next non-data byte
 		rPtr = lPtr;
 		while ((buffer[rPtr + 1] < 0x80) && (rPtr < (bufferSize - 1))) {
 			rPtr++;
 		}
+
 		//look at l and r pointers and decode by size.
 		if (rPtr - lPtr < 1) {
 			//Time code or system
