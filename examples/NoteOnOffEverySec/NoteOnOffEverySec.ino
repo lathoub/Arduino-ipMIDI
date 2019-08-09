@@ -1,3 +1,4 @@
+#include <EthernetUdp.h>
 #include "ipMIDI.h"
 
 // Enter a MAC address for your controller below.
@@ -39,10 +40,10 @@ void setup()
   Serial.print(F("IP address is "));
   Serial.println(Ethernet.localIP());
 
-  ipm.begin();
+  ipMIDI.begin();
 
-  ipm.setHandleNoteOn(OnBleMidiNoteOn);
-  ipm.setHandleNoteOff(OnBleMidiNoteOff);
+  ipMIDI.setHandleNoteOn(OnBleMidiNoteOn);
+  ipMIDI.setHandleNoteOff(OnBleMidiNoteOff);
 
   Serial.println(F("looping"));
 }
@@ -52,9 +53,9 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  //ipm.read();
+  //ipMIDI.read();
 
-  ipm.sendNoteOn(60, 127, 1);
+  ipMIDI.sendNoteOn(60, 127, 1);
   delay(1000);
 }
 
