@@ -20,22 +20,26 @@ class ipMidiTransport
 public:
 	ipMidiTransport()
 	{
+		mRxBuffer.clear();
+
 		// fixed, part of the protocol
 		multiIP_ = IPAddress(225, 0, 0, 37);
-
-		mRxBuffer.clear();
 	};
 
 public:
 	inline void begin(const int port = ipMIDIDefaultSettings::Port, const Channel inChannel = 1)
 	{
-		port_ = 21928;
-		dataPort_.beginMulticast(multiIP_, port_);
+		port_ = port;
+		auto success = dataPort_.beginMulticast(multiIP_, port_);
+//		if (!success)
+//			Serial.println("probleem met beginMulticast");
 	}
 
 	inline void beginTransmission()
 	{
-		dataPort_.beginPacket(multiIP_, port_);
+		auto success = dataPort_.beginPacket(multiIP_, port_);
+		//if (!success)
+		//	Serial.println("probleem met beginPacket");
 	};
 
 	inline void write(byte byte)
@@ -45,7 +49,9 @@ public:
 
 	inline void endTransmission()
 	{
-		dataPort_.endPacket();
+		auto success = dataPort_.endPacket();
+		//if (!success)
+		//	Serial.println("probleem met endPacket");
 	};
 
 	inline byte read()
@@ -55,6 +61,8 @@ public:
 
 	inline unsigned available()
 	{
+		return 0;
+
 		auto packetSize = dataPort_.parsePacket();
 		if (packetSize > 0)
 		{
