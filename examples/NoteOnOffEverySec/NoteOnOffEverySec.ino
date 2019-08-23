@@ -1,4 +1,4 @@
-#include <EthernetUdp.h>
+#include <Ethernet.h>
 #include "ipMIDI.h"
 
 // Enter a MAC address for your controller below.
@@ -7,7 +7,9 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-IPMIDI_CREATE_DEFAULT_INSTANCE();
+IPMIDI_CREATE_DEFAULT_INSTANCE()
+
+unsigned long startTime = millis();
 
 // -----------------------------------------------------------------------------
 //
@@ -42,8 +44,8 @@ void setup()
 
   ipMIDI.begin();
 
-  ipMIDI.setHandleNoteOn(OnBleMidiNoteOn);
-  ipMIDI.setHandleNoteOff(OnBleMidiNoteOff);
+  ipMIDI.setHandleNoteOn(OnMidiNoteOn);
+  ipMIDI.setHandleNoteOff(OnMidiNoteOff);
 
   Serial.println(F("looping"));
 }
@@ -53,10 +55,15 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  //ipMIDI.read();
+  ipMIDI.read();
 
-  ipMIDI.sendNoteOn(60, 127, 1);
-  delay(1000);
+  auto now = millis();
+  if (now - startTime >= 1000)
+  {
+    Serial.println(F("note"));
+    ipMIDI.sendNoteOn(60, 127, 1);
+    startTime = now;
+  }
 }
 
 // ====================================================================================
@@ -66,7 +73,7 @@ void loop()
 // -----------------------------------------------------------------------------
 // received note on
 // -----------------------------------------------------------------------------
-void OnBleMidiNoteOn(byte channel, byte note, byte velocity) {
+void OnMidiNoteOn(byte channel, byte note, byte velocity) {
   Serial.print(F("Incoming NoteOn from channel:"));
   Serial.print(channel);
   Serial.print(F(" note:"));
@@ -80,7 +87,7 @@ void OnBleMidiNoteOn(byte channel, byte note, byte velocity) {
 // -----------------------------------------------------------------------------
 // received note off
 // -----------------------------------------------------------------------------
-void OnBleMidiNoteOff(byte channel, byte note, byte velocity) {
+void OnMidiNoteOff(byte channel, byte note, byte velocity) {
   Serial.print(F("Incoming NoteOff from channel:"));
   Serial.print(channel);
   Serial.print(F(" note:"));

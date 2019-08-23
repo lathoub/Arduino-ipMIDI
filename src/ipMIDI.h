@@ -1,101 +1,86 @@
 #pragma once
 
-#include "utility/MIDI.h"
+#include <MIDI.h>
+#include <midi_RingBuffer.h>
 
 BEGIN_MIDI_NAMESPACE
 
-struct ipMIDIDefaultSettings : AbstractDefaultSettings
+struct ipMIDIDefaultSettings : public DefaultSettings
 {
-	static const long Port = 21928;
+	static constexpr uint16_t Port = 21928;
 };
 
 END_MIDI_NAMESPACE
 
 BEGIN_MIDI_NAMESPACE
 
-template<class UdpClass, class _Settings = ipMIDIDefaultSettings>
-class ipMidiInterface : public AbstractMidiInterface<ipMIDIDefaultSettings>
+template<class UdpClass>
+class ipMidiTransport 
 {
 public:
-	typedef _Settings Settings;
-
-public:
-	ipMidiInterface()
-		:	packetBufferIndex_(0),
-			packetAmountRead_(0)
+	ipMidiTransport()
 	{
 		// fixed, part of the protocol
 		multiIP_ = IPAddress(225, 0, 0, 37);
+
+		mRxBuffer.clear();
 	};
 
-	inline bool begin(const int port = Settings::Port, const Channel inChannel = 1)
+public:
+	inline void begin(const int port = ipMIDIDefaultSettings::Port, const Channel inChannel = 1)
 	{
-		AbstractMidiInterface<Settings>::begin(inChannel);
-
-		port_ = port;
-		return (dataPort_.beginMulticast(multiIP_, port_));
+		port_ = 21928;
+		dataPort_.beginMulticast(multiIP_, port_);
 	}
 
-protected:
-	inline void __beginWrite()
+	inline void beginTransmission()
 	{
 		dataPort_.beginPacket(multiIP_, port_);
 	};
 
-	inline void __write(byte byte)
+	inline void write(byte byte)
 	{
 		dataPort_.write(byte);
 	};
 
-	inline void __endWrite()
+	inline void endTransmission()
 	{
 		dataPort_.endPacket();
 	};
 
-	inline byte __read()
+	inline byte read()
 	{
-		return packetBuffer_[packetAmountRead_ - packetBufferIndex_];
+		return mRxBuffer.read();
 	};
 
-	inline int __available()
+	inline unsigned available()
 	{
-		if (packetBufferIndex_ > 0)
-			packetBufferIndex_--; // data is still in the packetBuffer_, empty it first
-		else
+		auto packetSize = dataPort_.parsePacket();
+		if (packetSize > 0)
 		{
-			auto packetSize = dataPort_.parsePacket();
-			if (0 == packetSize) return 0; // if nothing is available, leave here
-
-			// data is ready to be read, do not read more than what we have memory for
-			packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, sizeof(packetBuffer_));
-
-			Serial.print("Incoming: ");
-			for (int i = 0; i < packetAmountRead_; i++)
-			{
-				Serial.print(packetBuffer_[i], HEX);
-				Serial.print(" ");
-			}
-			Serial.println("");
+			while (packetSize-- > 0)
+				mRxBuffer.write(dataPort_.read());
 		}
 
-		return packetBufferIndex_;
+		return mRxBuffer.getLength();
 	};
 
 private:
 	UdpClass dataPort_;
 
-	uint16_t port_ = Settings::Port;
-	IPAddress multiIP_;
+    typedef RingBuffer<byte, 256> Buffer;
+    Buffer mRxBuffer;
 
-	byte		packetBuffer_[UDP_TX_PACKET_MAX_SIZE];
-	uint16_t	packetBufferIndex_;
-	uint16_t	packetAmountRead_;
+	uint16_t port_;
+	IPAddress multiIP_;
 };
 
-#define IPMIDI_CREATE_INSTANCE(Type, Name)                            \
-	midi::ipMidiInterface<Type> Name;
+#define IPMIDI_CREATE_INSTANCE(Type, Name)             \
+	typedef midi::ipMidiTransport<EthernetUDP> __st;   \
+	__st st;                                           \
+	midi::MidiInterface<__st> Name((__st&)st);
 
-#define IPMIDI_CREATE_DEFAULT_INSTANCE()                                      \
+#define IPMIDI_CREATE_DEFAULT_INSTANCE()               \
 	IPMIDI_CREATE_INSTANCE(EthernetUDP, ipMIDI);
 
 END_MIDI_NAMESPACE
