@@ -4,14 +4,18 @@
 
 #include "ipMIDI.h"
 
+// Dependency:
+// https://github.com/lathoub/arduino_midi_library
+// branch: static-polymorphism
+
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-char ssid[] = "The Hefty Network"; //  your network SSID (name)
-char pass[] = "0208196700";    // your network password (use for WPA, or use as key for WEP)
+char ssid[] = "xxx"; //  your network SSID (name)
+char pass[] = "yyy";    // your network password (use for WPA, or use as key for WEP)
 
 IPMIDI_CREATE_INSTANCE(WiFiUDP, ipMIDI); 
 
@@ -61,7 +65,7 @@ void loop()
   auto now = millis();
   if (now - startTime >= 1000)
   {
-    Serial.println(F("note"));
+    Serial.println(F("note 60"));
     ipMIDI.sendNoteOn(60, 127, 1);
     startTime = now;
   }

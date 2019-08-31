@@ -1,3 +1,5 @@
+#include <Ethernet.h>
+
 #include "ipMIDI.h"
 
 // Dependency:
@@ -67,6 +69,8 @@ void loop()
     ipMIDI.sendNoteOn(60, 127, 1);
     startTime = now;
   }
+
+  Ethernet.maintain();
 }
 
 // ====================================================================================

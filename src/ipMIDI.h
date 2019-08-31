@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Ethernet.h>
-
 #include <MIDI.h>
 #include <midi_RingBuffer.h>
 
@@ -69,8 +67,6 @@ public:
 
 	inline unsigned available()
 	{
-		Ethernet.maintain();
-
 		auto packetSize = dataPort_.parsePacket();
 		if (packetSize > 0)
 			while (packetSize-- > 0)
