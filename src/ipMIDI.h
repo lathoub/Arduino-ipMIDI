@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Ethernet.h>
+
 #include <MIDI.h>
 #include <midi_RingBuffer.h>
 
@@ -16,13 +18,14 @@ END_MIDI_NAMESPACE
 
 BEGIN_MIDI_NAMESPACE
 
+static const IPAddress ipMIDI_multicast(225, 0, 0, 37);
+
 template<class UdpClass>
 class ipMidiTransport 
 {
 public:
 	ipMidiTransport()
-		:	multiIP_(225, 0, 0, 37)
-		,	port_(ipMIDIDefaultSettings::Port)
+		:	port_(ipMIDIDefaultSettings::Port)
 	{
 		mRxBuffer.clear();
 	};
@@ -31,16 +34,14 @@ public:
 	inline void begin(const int port = ipMIDIDefaultSettings::Port, const Channel inChannel = 1)
 	{
 		port_ = port;
-		dataPort_.beginMulticast(multiIP_, port_);
+		dataPort_.beginMulticast(ipMIDI_multicast, port_);
 	}
 
 	inline bool beginTransmission()
 	{
-		auto success = dataPort_.beginPacket(multiIP_, port_);
-		if (!success)
-			Serial.println("Failed beginPacket");
+		dataPort_.beginPacket(ipMIDI_multicast, port_);
 
-		return success;
+		return true;
 	};
 
 	inline void write(byte byte)
@@ -60,6 +61,8 @@ public:
 
 	inline unsigned available()
 	{
+		Ethernet.maintain();
+
 		auto packetSize = dataPort_.parsePacket();
 		if (packetSize > 0)
 			while (packetSize-- > 0)
@@ -75,7 +78,6 @@ private:
     Buffer mRxBuffer;
 
 	uint16_t port_;
-	const IPAddress multiIP_;
 };
 
 #define IPMIDI_CREATE_INSTANCE(Type, Name)             \
