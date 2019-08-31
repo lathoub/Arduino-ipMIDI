@@ -34,24 +34,32 @@ public:
 	inline void begin(const int port = ipMIDIDefaultSettings::Port, const Channel inChannel = 1)
 	{
 		port_ = port;
-		dataPort_.beginMulticast(ipMIDI_multicast, port_);
+		auto success = dataPort_.beginMulticast(ipMIDI_multicast, port_);
+		if (!success)
+			Serial.println("beginPacket failed");
 	}
 
 	inline bool beginTransmission()
 	{
-		dataPort_.beginPacket(ipMIDI_multicast, port_);
+		auto success = dataPort_.beginPacket(ipMIDI_multicast, port_);
+		if (!success)
+			Serial.println("beginPacket failed");
 
-		return true;
+		return success;
 	};
 
 	inline void write(byte byte)
 	{
-		dataPort_.write(byte);
+		auto bytesWritten = dataPort_.write(byte);
+		if (1 != bytesWritten)
+			Serial.println("write 1 != bytesWritten");
 	};
 
 	inline void endTransmission()
 	{
-		dataPort_.endPacket();
+		auto success = dataPort_.endPacket();
+		if (!success)
+			Serial.println("endPacket failed");
 	};
 
 	inline byte read()

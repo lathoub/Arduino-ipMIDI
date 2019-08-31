@@ -1,5 +1,8 @@
-#include <Ethernet.h>
 #include "ipMIDI.h"
+
+// Dependency:
+// https://github.com/lathoub/arduino_midi_library
+// branch: static-polymorphism
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
@@ -60,7 +63,7 @@ void loop()
   auto now = millis();
   if (now - startTime >= 1000)
   {
-    Serial.println(F("note"));
+    Serial.println(F("note 60"));
     ipMIDI.sendNoteOn(60, 127, 1);
     startTime = now;
   }
