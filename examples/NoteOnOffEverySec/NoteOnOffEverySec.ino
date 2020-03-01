@@ -1,10 +1,7 @@
 #include <Ethernet.h>
 
-#include "ipMIDI.h"
-
-// Dependency:
-// https://github.com/lathoub/arduino_midi_library
-// branch: static-polymorphism
+#define DEBUG 0
+#include <ipMIDI.h>
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
@@ -12,47 +9,34 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-IPMIDI_CREATE_DEFAULT_INSTANCE()
+typedef IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> __amt;
+__amt ipMIDI(21928);
+MIDI_NAMESPACE::MidiInterface<__amt> MIDI((__amt &)ipMIDI);
 
-unsigned long startTime = millis();
+unsigned long t1 = millis();
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void setup()
 {
-  // Serial communications and wait for port to open:
-  Serial.begin(115200);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
-  Serial.println("Booting");
+  DEBUG_BEGIN(115200);
 
-  // start Ethernet and UDP
+  N_DEBUG_PRINTLN(F("Getting IP address..."));
+
   if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
-    // Check for Ethernet hardware present
-    if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
-    } else if (Ethernet.linkStatus() == LinkOFF) {
-      Serial.println("Ethernet cable is not connected.");
-    }
-    // no point in carrying on, so do nothing forevermore:
-    while (true) {
-      delay(1);
-    }
+    F_DEBUG_PRINTLN(F("Failed DHCP, check network cable & reboot"));
+    for (;;);
   }
 
-  Serial.println();
-  Serial.print(F("IP address is "));
-  Serial.println(Ethernet.localIP());
+  N_DEBUG_PRINT(F("IP address is "));
+  N_DEBUG_PRINTLN(Ethernet.localIP());
 
-  ipMIDI.begin();
+  // Listen for MIDI messages on channel 1
+  MIDI.begin(1);
 
-  ipMIDI.setHandleNoteOn(OnMidiNoteOn);
-  ipMIDI.setHandleNoteOff(OnMidiNoteOff);
-
-  Serial.println(F("looping"));
+  MIDI.setHandleNoteOn(OnMidiNoteOn);
+  MIDI.setHandleNoteOff(OnMidiNoteOff);
 }
 
 // -----------------------------------------------------------------------------
@@ -60,17 +44,23 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  ipMIDI.read();
+  // Listen to incoming notes
+  MIDI.read();
 
-  auto now = millis();
-  if (now - startTime >= 1000)
+  // send note on/off every second
+  // (dont cáll delay(1000) as it will stall the pipeline)
+  if ((millis() - t1) > 500)
   {
-    Serial.println(F("note 60"));
-    ipMIDI.sendNoteOn(60, 127, 1);
-    startTime = now;
-  }
+    t1 = millis();
+    //   Serial.print(F(".");
 
-  Ethernet.maintain();
+    byte note = random(1, 127);
+    byte velocity = 55;
+    byte channel = 1;
+
+    MIDI.sendNoteOn(note, velocity, channel);
+    MIDI.sendNoteOff(note, velocity, channel);
+  }
 }
 
 // ====================================================================================

@@ -1,95 +1,68 @@
 #pragma once
 
-#include <MIDI.h>
-#include <midi_RingBuffer.h>
+#include "utility/Logging.h"
 
-BEGIN_MIDI_NAMESPACE
+// this is an exported and stripped down version of the MIDI library by  47 blabla
+// feat 4.4.0 summer 2019
+#include "utility/midi_feat4_4_0/MIDI.h"
 
-struct ipMIDIDefaultSettings : public DefaultSettings
-{
-	static constexpr uint16_t BufferSize = 16;
+#include "ipMIDI_Namespace.h"
 
-	static constexpr uint16_t Port = 21928;
-};
+BEGIN_IPMIDI_NAMESPACE
 
-END_MIDI_NAMESPACE
+static uint8_t ipMIDIMulticastAddr[] = {225, 0, 0, 37};
 
-BEGIN_MIDI_NAMESPACE
-
-static const IPAddress ipMIDI_multicast(225, 0, 0, 37);
-
-template<class UdpClass>
-class ipMidiTransport 
+template <class UdpClass>
+class ipMidiTransport
 {
 public:
-	ipMidiTransport()
-		:	port_(ipMIDIDefaultSettings::Port)
+	ipMidiTransport(uint16_t port = 21928)
+		:	port_(port)
 	{
-		mRxBuffer.clear();
 	};
 
 public:
-	inline void begin(const int port = ipMIDIDefaultSettings::Port, const Channel inChannel = 1)
+	void begin(MIDI_NAMESPACE::Channel inChannel = 1)
 	{
-		port_ = port;
-		auto success = dataPort_.beginMulticast(ipMIDI_multicast, port_);
+        auto success = dataPort_.beginMulticast(ipMIDIMulticastAddr, port_);
 		if (!success)
-			Serial.println("beginPacket failed");
+			E_DEBUG_PRINTLN("beginPacket failed");
 	}
 
-	inline bool beginTransmission()
+	bool beginTransmission()
 	{
-		auto success = dataPort_.beginPacket(ipMIDI_multicast, port_);
+        auto success = dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
 		if (!success)
-			Serial.println("beginPacket failed");
+			E_DEBUG_PRINTLN("beginPacket failed");
 
 		return success;
 	};
 
-	inline void write(byte byte)
+	void write(byte byte)
 	{
-		auto bytesWritten = dataPort_.write(byte);
-		if (1 != bytesWritten)
-			Serial.println("write 1 != bytesWritten");
+		dataPort_.write(byte);
 	};
 
-	inline void endTransmission()
+	void endTransmission()
 	{
-		auto success = dataPort_.endPacket();
-		if (!success)
-			Serial.println("endPacket failed");
+        dataPort_.endPacket();
+        dataPort_.flush();
 	};
 
-	inline byte read()
+	byte read()
 	{
-		return mRxBuffer.read();
+		return dataPort_.read();
 	};
 
-	inline unsigned available()
+	unsigned available()
 	{
-		auto packetSize = dataPort_.parsePacket();
-		if (packetSize > 0)
-			while (packetSize-- > 0)
-				mRxBuffer.write(dataPort_.read());
-
-		return mRxBuffer.getLength();
+		return dataPort_.parsePacket();
 	};
 
 private:
 	UdpClass dataPort_;
 
-    typedef RingBuffer<byte, ipMIDIDefaultSettings::BufferSize> Buffer;
-    Buffer mRxBuffer;
-
 	uint16_t port_;
 };
 
-#define IPMIDI_CREATE_INSTANCE(Type, Name)             \
-	typedef midi::ipMidiTransport<Type> __st;   \
-	__st st;                                           \
-	midi::MidiInterface<__st> Name((__st&)st);
-
-#define IPMIDI_CREATE_DEFAULT_INSTANCE()               \
-	IPMIDI_CREATE_INSTANCE(EthernetUDP, ipMIDI);
-
-END_MIDI_NAMESPACE
+END_IPMIDI_NAMESPACE
