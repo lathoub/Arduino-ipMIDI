@@ -1,6 +1,6 @@
 #include <Ethernet.h>
 
-#define DEBUG 0
+#define DEBUG 7
 #include <ipMIDI.h>
 
 // Enter a MAC address for your controller below.
@@ -9,9 +9,7 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-typedef IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> __amt;
-__amt ipMIDI(21928);
-MIDI_NAMESPACE::MidiInterface<__amt> MIDI((__amt &)ipMIDI);
+IPMIDI_CREATE_DEFAULT_INSTANCE();
 
 unsigned long t1 = millis();
 
