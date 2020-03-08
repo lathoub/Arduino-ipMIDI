@@ -37,7 +37,7 @@ public:
 	bool beginTransmission(MidiType)
 	{
         auto success = dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
-		if (!success)
+		if (success == 0)
 			E_DEBUG_PRINTLN("beginPacket failed");
 
 		return success;
@@ -45,15 +45,15 @@ public:
 
 	void write(byte byte)
 	{
-		auto success = dataPort_.write(byte);
-        if (!success)
+		auto bytesWritten = dataPort_.write(byte);
+        if (bytesWritten != 1)
             E_DEBUG_PRINTLN("write failed");
 	};
 
 	void endTransmission()
 	{
         auto success = dataPort_.endPacket();
-        if (!success)
+        if (success == 0)
             E_DEBUG_PRINTLN("endPacket failed");
 	};
 
