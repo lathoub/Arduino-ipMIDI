@@ -59,12 +59,12 @@ public:
 
 	byte read()
 	{
-        return 0;//dataPort_.read();
+        return dataPort_.read();
 	};
 
 	unsigned available()
 	{
-        return 0;//dataPort_.parsePacket();
+        return dataPort_.parsePacket();
 	};
 
 private:
