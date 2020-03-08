@@ -1,8 +1,56 @@
-# Arduino-ipMIDI
+# Experimental
+   
+# Arduino ipMIDI Transport 
+This library implements the USB-MIDI transport layer for the [FortySevenEffects Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) 
 
-Works find on ESP32, but when run on a W5100 Ethernet shield, it stops working after a while.
+## Installation
+This library depends on the [Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library).
 
-Important note: this library is will not work stand alone, you will need a fork of the MIDI library installed as well!
-Use the static-polymorphism branch in https://github.com/lathoub/arduino_midi_library !!
+When installing this library from the Arduino IDE, the dependency be downloaded and installed in the same directory as this library. (Thanks to the `depends` clause in `library.properties`)
 
-# Any help is much appreciated!
+When manually installing this library, you have to manually download [Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) from github and install it in the same directory as this library - without this additional install, this library will not be able to compile. 
+
+## Usage
+### Basic / Default
+```cpp
+#include <ipMIDI.h>
+...
+IPMIDI_CREATE_DEFAULT_INSTANCE();
+...
+void setup()
+{
+   MIDI.begin(1);
+...
+void loop()
+{
+   MIDI.read();
+```
+will create a instance named `ipMIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
+
+### Modified
+```cpp
+#include <ipMIDI.h>
+...
+IPMIDI_CREATE_INSTANCE(EthernetUDP, MIDI, ipMIDI2, 21930);
+```
+will create a instance named `ipMIDI2` and is connected to port 21930.
+
+### Advanced
+```cpp
+#include <ipMIDI.h>
+...
+typedef IPMIDI_NAMESPACE::ipMidiTransport<Type> __imt; \
+__imt ipMIDI3(21930); \
+MIDI_NAMESPACE::MidiInterface<__imt> MIDI3((__imt &)ipMIDI3);
+```
+will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is by default connected to port 21930.
+
+## Tested boards/modules
+- Arduino Ethernet
+- Arduino MKRZERO + MKR Eth shield (W5500)
+
+## Other Transport protocols:
+The libraries below  the same calling mechanism (API), making it easy to interchange the transport layer.
+- [Arduino AppleMIDI Transport](https://github.com/lathoub/Arduino-AppleMIDI-Library)
+- [Arduino USB-MIDI  Transport](https://github.com/lathoub/USB-MIDI)
+- [Arduino BLE-MIDI  Transport](https://github.com/lathoub/Arduino-BLE-MIDI)
