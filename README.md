@@ -1,7 +1,7 @@
 # Experimental
    
 # Arduino ipMIDI Transport 
-This library implements the USB-MIDI transport layer for the [FortySevenEffects Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) 
+This library implements the ipMIDI transport layer for the [FortySevenEffects Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) 
 
 ## Installation
 This library depends on the [Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library).
