@@ -2,7 +2,10 @@
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
-#include "ipMIDI.h"
+#include "credentials.h"
+
+#define DEBUG 7
+#include <ipMIDI.h>
 
 // Dependency:
 // https://github.com/lathoub/arduino_midi_library
@@ -14,45 +17,39 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-char ssid[] = "xxx"; //  your network SSID (name)
-char pass[] = "yyy";    // your network password (use for WPA, or use as key for WEP)
+const char ssid[] = WIFI_SSID; //  your network SSID (name)
+const char pass[] = WIFI_PASSWD;    // your network password (use for WPA, or use as key for WEP)
 
-IPMIDI_CREATE_INSTANCE(WiFiUDP, ipMIDI); 
+IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
 
-unsigned long startTime = millis();
+unsigned long t1 = millis();
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void setup()
 {
-  // Serial communications and wait for port to open:
-  Serial.begin(115200);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
-  Serial.println("Booting");
+  DEBUG_BEGIN(115200);
+
+  N_DEBUG_PRINTLN(F("Getting IP address..."));
 
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(F("."));
+    N_DEBUG_PRINT(F("."));
+
   }
-  Serial.println(F(""));
-  Serial.println(F("WiFi connected"));
 
+  N_DEBUG_PRINTLN(F("WiFi connected"));
+  N_DEBUG_PRINT(F("IP address is "));
+  N_DEBUG_PRINTLN(WiFi.localIP());
 
-  Serial.println();
-  Serial.print(F("IP address is "));
-  Serial.println(WiFi.localIP());
+  // Listen for MIDI messages on channel 1
+  MIDI.begin(1);
 
-  ipMIDI.begin();
-
-  ipMIDI.setHandleNoteOn(OnMidiNoteOn);
-  ipMIDI.setHandleNoteOff(OnMidiNoteOff);
-
-  Serial.println(F("looping"));
+  MIDI.setHandleNoteOn(OnMidiNoteOn);
+  MIDI.setHandleNoteOff(OnMidiNoteOff);
 }
 
 // -----------------------------------------------------------------------------
@@ -60,14 +57,18 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  ipMIDI.read();
+  MIDI.read();
 
-  auto now = millis();
-  if (now - startTime >= 1000)
+  if ((millis() - t1) > 500)
   {
-    Serial.println(F("note 60"));
-    ipMIDI.sendNoteOn(60, 127, 1);
-    startTime = now;
+    t1 = millis();
+
+    byte note = random(1, 127);
+    byte velocity = 55;
+    byte channel = 1;
+
+    MIDI.sendNoteOn(note, velocity, channel);
+    MIDI.sendNoteOff(note, velocity, channel);
   }
 }
 
@@ -79,13 +80,12 @@ void loop()
 // received note on
 // -----------------------------------------------------------------------------
 void OnMidiNoteOn(byte channel, byte note, byte velocity) {
-  Serial.print(F("Incoming NoteOn from channel:"));
-  Serial.print(channel);
-  Serial.print(F(" note:"));
-  Serial.print(note);
-  Serial.print(F(" velocity:"));
-  Serial.print(velocity);
-  Serial.println();
+  N_DEBUG_PRINT(F("Incoming NoteOn  from channel: "));
+  N_DEBUG_PRINT(channel);
+  N_DEBUG_PRINT(F(", note: "));
+  N_DEBUG_PRINT(note);
+  N_DEBUG_PRINT(F(", velocity: "));
+  N_DEBUG_PRINTLN(velocity);
 }
 
 
@@ -93,11 +93,10 @@ void OnMidiNoteOn(byte channel, byte note, byte velocity) {
 // received note off
 // -----------------------------------------------------------------------------
 void OnMidiNoteOff(byte channel, byte note, byte velocity) {
-  Serial.print(F("Incoming NoteOff from channel:"));
-  Serial.print(channel);
-  Serial.print(F(" note:"));
-  Serial.print(note);
-  Serial.print(F(" velocity:"));
-  Serial.print(velocity);
-  Serial.println();
+  N_DEBUG_PRINT(F("Incoming NoteOff from channel: "));
+  N_DEBUG_PRINT(channel);
+  N_DEBUG_PRINT(F(", note: "));
+  N_DEBUG_PRINT(note);
+  N_DEBUG_PRINT(F(", velocity: "));
+  N_DEBUG_PRINTLN(velocity);
 }

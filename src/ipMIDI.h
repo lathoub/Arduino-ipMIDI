@@ -7,6 +7,10 @@ using namespace MIDI_NAMESPACE;
 
 #include "ipMIDI_Namespace.h"
 
+#ifndef UDP_TX_PACKET_MAX_SIZE
+#define UDP_TX_PACKET_MAX_SIZE 24
+#endif
+
 BEGIN_IPMIDI_NAMESPACE
 
 static uint8_t ipMIDIMulticastAddr[] = {225, 0, 0, 37};
@@ -59,16 +63,29 @@ public:
 
 	byte read()
 	{
-        return dataPort_.read();
+        return packetBuffer_[packetAmountRead_ - packetBufferIndex_];
 	};
 
 	unsigned available()
 	{
-        return dataPort_.parsePacket();
+        if (packetBufferIndex_ > 0) // empty buffer first, before reading new data
+            packetBufferIndex_--;
+        else
+        {
+            auto packetSize = dataPort_.parsePacket();
+            if (0 == packetSize) return 0; // if nothing is available, leave here
+            // data is ready to be read, do not read more than what we have memory for
+            packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, packetSize);
+        }
+        return packetBufferIndex_;
 	};
 
 private:
-	UdpClass dataPort_;
+    byte        packetBuffer_[UDP_TX_PACKET_MAX_SIZE];
+    uint16_t    packetBufferIndex_;
+    uint16_t    packetAmountRead_;
+
+    UdpClass dataPort_;
 
 	uint16_t port_;
 };

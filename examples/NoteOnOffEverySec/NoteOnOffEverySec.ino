@@ -42,15 +42,11 @@ void setup()
 // -----------------------------------------------------------------------------
 void loop()
 {
-  // Listen to incoming notes
   MIDI.read();
 
-  // send note on/off every second
-  // (dont cáll delay(1000) as it will stall the pipeline)
   if ((millis() - t1) > 500)
   {
     t1 = millis();
-    //   Serial.print(F(".");
 
     byte note = random(1, 127);
     byte velocity = 55;
@@ -69,13 +65,12 @@ void loop()
 // received note on
 // -----------------------------------------------------------------------------
 void OnMidiNoteOn(byte channel, byte note, byte velocity) {
-  Serial.print(F("Incoming NoteOn from channel:"));
-  Serial.print(channel);
-  Serial.print(F(" note:"));
-  Serial.print(note);
-  Serial.print(F(" velocity:"));
-  Serial.print(velocity);
-  Serial.println();
+  N_DEBUG_PRINT(F("Incoming NoteOn  from channel: "));
+  N_DEBUG_PRINT(channel);
+  N_DEBUG_PRINT(F(", note: "));
+  N_DEBUG_PRINT(note);
+  N_DEBUG_PRINT(F(", velocity: "));
+  N_DEBUG_PRINTLN(velocity);
 }
 
 
@@ -83,11 +78,10 @@ void OnMidiNoteOn(byte channel, byte note, byte velocity) {
 // received note off
 // -----------------------------------------------------------------------------
 void OnMidiNoteOff(byte channel, byte note, byte velocity) {
-  Serial.print(F("Incoming NoteOff from channel:"));
-  Serial.print(channel);
-  Serial.print(F(" note:"));
-  Serial.print(note);
-  Serial.print(F(" velocity:"));
-  Serial.print(velocity);
-  Serial.println();
+  N_DEBUG_PRINT(F("Incoming NoteOff from channel: "));
+  N_DEBUG_PRINT(channel);
+  N_DEBUG_PRINT(F(", note: "));
+  N_DEBUG_PRINT(note);
+  N_DEBUG_PRINT(F(", velocity: "));
+  N_DEBUG_PRINTLN(velocity);
 }
