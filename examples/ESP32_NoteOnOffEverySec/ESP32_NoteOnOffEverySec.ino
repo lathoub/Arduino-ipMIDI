@@ -17,8 +17,8 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 
-const char ssid[] = WIFI_SSID; //  your network SSID (name)
-const char pass[] = WIFI_PASSWD;    // your network password (use for WPA, or use as key for WEP)
+const char ssid[] = WIFI_SSID;
+const char pass[] = WIFI_PASSWD;
 
 IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
 

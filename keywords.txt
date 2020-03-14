@@ -5,8 +5,7 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-BLEMIDI	KEYWORD1
-BLEMIDI.h	KEYWORD1
+ipMIDI.h	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -46,4 +45,4 @@ tick	         KEYWORD2
 #######################################
 
 # Namespace, considering it as a literal
-blemidi	LITERAL1
+ipMIDI	LITERAL1
