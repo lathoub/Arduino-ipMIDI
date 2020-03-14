@@ -1,6 +1,6 @@
 #include <ETH.h>
 
-#define DEBUG 7
+#define DEBUG 4
 #include <ipMIDI.h>
 
 IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
@@ -21,8 +21,7 @@ void setup()
   N_DEBUG_PRINT(F("IP address is "));
   N_DEBUG_PRINTLN(ETH.localIP());
 
-  // Listen for MIDI messages on channel 1
-  MIDI.begin(1);
+  MIDI.begin(1); // Listen for MIDI messages on channel 1
 
   MIDI.setHandleNoteOn(OnMidiNoteOn);
   MIDI.setHandleNoteOff(OnMidiNoteOff);
