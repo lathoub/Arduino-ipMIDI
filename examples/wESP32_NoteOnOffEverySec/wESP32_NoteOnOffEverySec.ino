@@ -1,7 +1,5 @@
 #include <ETH.h>
 
-//#include <WiFiUdp.h>
-
 #define DEBUG 7
 #include <ipMIDI.h>
 
@@ -37,7 +35,7 @@ void loop()
 {
   MIDI.read();
 
-  if ((millis() - t1) > 500)
+  if ((millis() - t1) > 250)
   {
     t1 = millis();
 
