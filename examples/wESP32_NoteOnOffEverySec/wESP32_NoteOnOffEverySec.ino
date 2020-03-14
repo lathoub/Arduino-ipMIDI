@@ -1,22 +1,9 @@
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WiFiUdp.h>
+#include <ETH.h>
+
+//#include <WiFiUdp.h>
 
 #define DEBUG 7
 #include <ipMIDI.h>
-
-// Dependency:
-// https://github.com/lathoub/arduino_midi_library
-// branch: static-polymorphism
-
-// Enter a MAC address for your controller below.
-// Newer Ethernet shields have a MAC address printed on a sticker on the shield
-byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-};
-
-const char ssid[] = WIFI_SSID;
-const char pass[] = WIFI_PASSWD;
 
 IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
 
@@ -31,17 +18,10 @@ void setup()
 
   N_DEBUG_PRINTLN(F("Getting IP address..."));
 
-  WiFi.begin(ssid, pass);
+  ETH.begin();
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    N_DEBUG_PRINT(F("."));
-
-  }
-
-  N_DEBUG_PRINTLN(F("WiFi connected"));
   N_DEBUG_PRINT(F("IP address is "));
-  N_DEBUG_PRINTLN(WiFi.localIP());
+  N_DEBUG_PRINTLN(ETH.localIP());
 
   // Listen for MIDI messages on channel 1
   MIDI.begin(1);
