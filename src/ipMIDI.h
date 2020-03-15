@@ -24,8 +24,7 @@ public:
 	{
 	};
 
-public:
-	void begin(MIDI_NAMESPACE::Channel inChannel = 1)
+    void begin(MIDI_NAMESPACE::Channel inChannel = 1)
 	{
         // if we were called very soon after the board was booted, we need to give the
         // EthernetShield (WIZnet) some time to come up. Hence, we delay until millis() is at
@@ -38,6 +37,9 @@ public:
 			E_DEBUG_PRINTLN("beginMulticast failed");
 	}
 
+    const char* getTransportName() { return "ipMIDI"; };
+
+protected:
 	bool beginTransmission(MidiType)
 	{
         auto success = dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
