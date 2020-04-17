@@ -1,7 +1,5 @@
 #pragma once
 
-#include "utility/Logging.h"
-
 #include <MIDI.h>
 using namespace MIDI_NAMESPACE;
 
@@ -24,7 +22,7 @@ public:
 	{
 	};
 
-    void begin(MIDI_NAMESPACE::Channel inChannel = 1)
+    void begin()
 	{
         // if we were called very soon after the board was booted, we need to give the
         // EthernetShield (WIZnet) some time to come up. Hence, we delay until millis() is at
@@ -32,35 +30,23 @@ public:
         // after begin, the announce packet does not get lost in the bowels of the WIZnet chip.
         while (millis() < 3000) delay(100);
 
-        auto success = dataPort_.beginMulticast(ipMIDIMulticastAddr, port_);
-		if (!success)
-			E_DEBUG_PRINTLN("beginMulticast failed");
+        dataPort_.beginMulticast(ipMIDIMulticastAddr, port_);
 	}
-
-    const char* getTransportName() { return "ipMIDI"; };
 
 protected:
 	bool beginTransmission(MidiType)
 	{
-        auto success = dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
-		if (success == 0)
-			E_DEBUG_PRINTLN("beginPacket failed");
-
-		return success;
+        return dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
 	};
 
 	void write(byte byte)
 	{
-		auto bytesWritten = dataPort_.write(byte);
-        if (bytesWritten != 1)
-            E_DEBUG_PRINTLN("write failed");
+		dataPort_.write(byte);
 	};
 
 	void endTransmission()
 	{
-        auto success = dataPort_.endPacket();
-        if (success == 0)
-            E_DEBUG_PRINTLN("endPacket failed");
+        dataPort_.endPacket();
 	};
 
 	byte read()
