@@ -11,11 +11,13 @@ using namespace MIDI_NAMESPACE;
 
 BEGIN_IPMIDI_NAMESPACE
 
-static uint8_t ipMIDIMulticastAddr[] = {225, 0, 0, 37};
+static uint8_t ipMIDIMulticastAddr[] = { 225, 0, 0, 37 };
 
 template <class UdpClass>
 class ipMidiTransport
 {
+    friend class MIDI_NAMESPACE::MidiInterface<ipMidiTransport<UdpClass>>;
+
 public:
 	ipMidiTransport(uint16_t port = 21928)
 		:	port_(port)
@@ -78,12 +80,11 @@ private:
 	uint16_t port_;
 };
 
-#define IPMIDI_CREATE_INSTANCE(Type, midiName, ipMidiName, portNr)  \
-    typedef IPMIDI_NAMESPACE::ipMidiTransport<Type> __amt; \
-    __amt ipMidiName(portNr); \
-    MIDI_NAMESPACE::MidiInterface<__amt> midiName((__amt &)ipMidiName);
+#define IPMIDI_CREATE_INSTANCE(Type, Name, Port)  \
+    IPMIDI_NAMESPACE::ipMidiTransport<Type> ip##Name(Port); \
+    MIDI_NAMESPACE::MidiInterface<IPMIDI_NAMESPACE::ipMidiTransport<Type>> Name((IPMIDI_NAMESPACE::ipMidiTransport<Type> &)ip##Name);
 
 #define IPMIDI_CREATE_DEFAULT_INSTANCE()  \
-    IPMIDI_CREATE_INSTANCE(EthernetUDP, MIDI, ipMIDI, 21928);
+    IPMIDI_CREATE_INSTANCE(EthernetUDP, MIDI, 21928);
 
 END_IPMIDI_NAMESPACE
