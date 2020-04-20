@@ -1,5 +1,3 @@
-# Experimental
-   
 # Arduino ipMIDI Transport 
 This library implements the ipMIDI transport layer for the [FortySevenEffects Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) 
 
@@ -27,7 +25,7 @@ void loop()
 ```
 will create a instance named `ipMIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
 
-### Modified
+### Modified 
 ```cpp
 #include <ipMIDI.h>
 ...
@@ -46,8 +44,7 @@ MIDI_NAMESPACE::MidiInterface<__imt> MIDI3((__imt &)ipMIDI3);
 will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is by default connected to port 21930.
 
 ## Tested boards/modules
-- Arduino Ethernet
-- Arduino MKRZERO + MKR Eth shield (W5500)
+- ESP32
 
 ## Other Transport protocols:
 The libraries below  the same calling mechanism (API), making it easy to interchange the transport layer.
