@@ -36,6 +36,8 @@ public:
 	}
 
 protected:
+	static const bool thruActivated = false;
+		
 	bool beginTransmission(MidiType)
 	{
         return dataPort_.beginPacket(ipMIDIMulticastAddr, port_);
