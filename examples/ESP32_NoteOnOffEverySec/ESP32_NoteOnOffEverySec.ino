@@ -2,7 +2,6 @@
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
-#define DEBUG 7
 #include <ipMIDI.h>
 
 // Dependency:
