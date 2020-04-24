@@ -4,10 +4,6 @@
 
 #include <ipMIDI.h>
 
-// Dependency:
-// https://github.com/lathoub/arduino_midi_library
-// branch: static-polymorphism
-
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
 byte mac[] = {
@@ -17,7 +13,7 @@ byte mac[] = {
 const char ssid[] = WIFI_SSID;
 const char pass[] = WIFI_PASSWD;
 
-IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
+IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, 21928);
 
 unsigned long t1 = millis();
 
@@ -26,21 +22,23 @@ unsigned long t1 = millis();
 // -----------------------------------------------------------------------------
 void setup()
 {
-  DEBUG_BEGIN(115200);
+  Serial.begin(115200);
+  while (!Serial);
+  Serial.println("Booting");
 
-  N_DEBUG_PRINTLN(F("Getting IP address..."));
+  Serial.println(F("Getting IP address..."));
 
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    N_DEBUG_PRINT(F("."));
+    Serial.print(F("."));
 
   }
 
-  N_DEBUG_PRINTLN(F("WiFi connected"));
-  N_DEBUG_PRINT(F("IP address is "));
-  N_DEBUG_PRINTLN(WiFi.localIP());
+  Serial.println(F("WiFi connected"));
+  Serial.print(F("IP address is "));
+  Serial.println(WiFi.localIP());
 
   // Listen for MIDI messages on channel 1
   MIDI.begin(1);
@@ -77,12 +75,12 @@ void loop()
 // received note on
 // -----------------------------------------------------------------------------
 void OnMidiNoteOn(byte channel, byte note, byte velocity) {
-  N_DEBUG_PRINT(F("Incoming NoteOn  from channel: "));
-  N_DEBUG_PRINT(channel);
-  N_DEBUG_PRINT(F(", note: "));
-  N_DEBUG_PRINT(note);
-  N_DEBUG_PRINT(F(", velocity: "));
-  N_DEBUG_PRINTLN(velocity);
+  Serial.print(F("Incoming NoteOn  from channel: "));
+  Serial.print(channel);
+  Serial.print(F(", note: "));
+  Serial.print(note);
+  Serial.print(F(", velocity: "));
+  Serial.println(velocity);
 }
 
 
@@ -90,10 +88,10 @@ void OnMidiNoteOn(byte channel, byte note, byte velocity) {
 // received note off
 // -----------------------------------------------------------------------------
 void OnMidiNoteOff(byte channel, byte note, byte velocity) {
-  N_DEBUG_PRINT(F("Incoming NoteOff from channel: "));
-  N_DEBUG_PRINT(channel);
-  N_DEBUG_PRINT(F(", note: "));
-  N_DEBUG_PRINT(note);
-  N_DEBUG_PRINT(F(", velocity: "));
-  N_DEBUG_PRINTLN(velocity);
+  Serial.print(F("Incoming NoteOff from channel: "));
+  Serial.print(channel);
+  Serial.print(F(", note: "));
+  Serial.print(note);
+  Serial.print(F(", velocity: "));
+  Serial.println(velocity);
 }

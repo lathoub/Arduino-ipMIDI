@@ -1,5 +1,4 @@
 #include <Ethernet.h>
-
 #include <ipMIDI.h>
 
 // Enter a MAC address for your controller below.
@@ -11,11 +10,6 @@ byte mac[] = {
 IPMIDI_CREATE_DEFAULT_INSTANCE();
 
 unsigned long t1 = millis();
-
-
-#ifdef ARDUINO
-intt aa =;
-#endif
 
 // -----------------------------------------------------------------------------
 //

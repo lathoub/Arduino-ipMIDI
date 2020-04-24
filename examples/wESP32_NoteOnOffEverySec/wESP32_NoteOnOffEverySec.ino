@@ -3,7 +3,7 @@
 #define DEBUG 4
 #include <ipMIDI.h>
 
-IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, ipMIDI, 21928);
+IPMIDI_CREATE_INSTANCE(WiFiUDP, MIDI, 21928);
 
 unsigned long t1 = millis();
 
@@ -12,14 +12,16 @@ unsigned long t1 = millis();
 // -----------------------------------------------------------------------------
 void setup()
 {
-  DEBUG_BEGIN(115200);
+  Serial.begin(115200);
+  while (!Serial);
+  Serial.println("Booting");
 
-  N_DEBUG_PRINTLN(F("Getting IP address..."));
+  Serial.println(F("Getting IP address..."));
 
   ETH.begin();
 
-  N_DEBUG_PRINT(F("IP address is "));
-  N_DEBUG_PRINTLN(ETH.localIP());
+  Serial.print(F("IP address is "));
+  Serial.println(ETH.localIP());
 
   MIDI.begin(1); // Listen for MIDI messages on channel 1
 
@@ -55,12 +57,12 @@ void loop()
 // received note on
 // -----------------------------------------------------------------------------
 void OnMidiNoteOn(byte channel, byte note, byte velocity) {
-  N_DEBUG_PRINT(F("Incoming NoteOn  from channel: "));
-  N_DEBUG_PRINT(channel);
-  N_DEBUG_PRINT(F(", note: "));
-  N_DEBUG_PRINT(note);
-  N_DEBUG_PRINT(F(", velocity: "));
-  N_DEBUG_PRINTLN(velocity);
+  Serial.print(F("Incoming NoteOn  from channel: "));
+  Serial.print(channel);
+  Serial.print(F(", note: "));
+  Serial.print(note);
+  Serial.print(F(", velocity: "));
+  Serial.println(velocity);
 }
 
 
@@ -68,10 +70,10 @@ void OnMidiNoteOn(byte channel, byte note, byte velocity) {
 // received note off
 // -----------------------------------------------------------------------------
 void OnMidiNoteOff(byte channel, byte note, byte velocity) {
-  N_DEBUG_PRINT(F("Incoming NoteOff from channel: "));
-  N_DEBUG_PRINT(channel);
-  N_DEBUG_PRINT(F(", note: "));
-  N_DEBUG_PRINT(note);
-  N_DEBUG_PRINT(F(", velocity: "));
-  N_DEBUG_PRINTLN(velocity);
+  Serial.print(F("Incoming NoteOff from channel: "));
+  Serial.print(channel);
+  Serial.print(F(", note: "));
+  Serial.print(note);
+  Serial.print(F(", velocity: "));
+  Serial.println(velocity);
 }
