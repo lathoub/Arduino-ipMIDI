@@ -39,7 +39,7 @@ will create a instance named `ipMIDI2` and is connected to port 21930.
 ```cpp
 #include <ipMIDI.h>
 ...
-IPMIDI_NAMESPACE::ipMidiTransport<Type> ipMIDI(Port); \
+IPMIDI_NAMESPACE::ipMidiTransport<Type> ipMIDI(Port);
 MIDI_NAMESPACE::MidiInterface<IPMIDI_NAMESPACE::ipMidiTransport<Type>> Name((IPMIDI_NAMESPACE::ipMidiTransport<Type> &)ipMIDI);
 ```
 will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is by default connected to port 21930.
