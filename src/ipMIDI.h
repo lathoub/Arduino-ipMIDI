@@ -11,7 +11,7 @@ using namespace MIDI_NAMESPACE;
 
 BEGIN_IPMIDI_NAMESPACE
 
-static uint8_t ipMIDIMulticastAddr[] = { 225, 0, 0, 37 };
+static const uint8_t ipMIDIMulticastAddr[] = { 225, 0, 0, 37 };
 
 template <class UdpClass>
 class ipMidiTransport
@@ -64,10 +64,14 @@ protected:
             packetBufferIndex_--;
         else
         {
-            auto packetSize = dataPort_.parsePacket();
-            if (0 == packetSize) return 0; // if nothing is available, leave here
+            if (packetTotalSize_ == 0)
+            {
+                packetTotalSize_ = dataPort_.parsePacket();
+                if (0 == packetTotalSize_) return 0; // if nothing is available, leave here
+            }
+
             // data is ready to be read, do not read more than what we have memory for
-            packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, UDP_TX_PACKET_MAX_SIZE);
+            packetTotalSize_ -= packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, UDP_TX_PACKET_MAX_SIZE);
         }
         return packetBufferIndex_;
 	};
@@ -76,10 +80,10 @@ private:
     byte        packetBuffer_[UDP_TX_PACKET_MAX_SIZE];
     uint16_t    packetBufferIndex_;
     uint16_t    packetAmountRead_;
+    uint16_t    packetTotalSize_;
 
-    UdpClass dataPort_;
-
-	uint16_t port_;
+    UdpClass    dataPort_;
+	uint16_t    port_;
 };
 
 #define IPMIDI_CREATE_INSTANCE(Type, Name, Port)  \
