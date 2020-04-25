@@ -67,7 +67,7 @@ protected:
             auto packetSize = dataPort_.parsePacket();
             if (0 == packetSize) return 0; // if nothing is available, leave here
             // data is ready to be read, do not read more than what we have memory for
-            packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, packetSize);
+            packetBufferIndex_ = packetAmountRead_ = dataPort_.read(packetBuffer_, UDP_TX_PACKET_MAX_SIZE);
         }
         return packetBufferIndex_;
 	};
