@@ -43,8 +43,8 @@ will create 2 instances named `ipMIDI2` and `MIDI2` and is connected to port 219
 ```cpp
 #include <ipMIDI.h>
 ...
-IPMIDI_NAMESPACE::ipMidiTransport<Type> ipMIDI3(21930);
-MIDI_NAMESPACE::MidiInterface<IPMIDI_NAMESPACE::ipMidiTransport<Type>> MIDI3((IPMIDI_NAMESPACE::ipMidiTransport<Type> &)ipMIDI3);
+IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> ipMIDI3(21930);
+MIDI_NAMESPACE::MidiInterface<IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP>> MIDI3((IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> &)ipMIDI3);
 ```
 will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is by default connected to port 21930.
 
