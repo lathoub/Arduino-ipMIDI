@@ -29,15 +29,15 @@ void loop()
 ...
 }
 ```
-will create a instance named `ipMIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
+will create 2 instances: `ipMIDI` and `MIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
 
 ### Modified 
 ```cpp
 #include <ipMIDI.h>
 ...
-IPMIDI_CREATE_INSTANCE(EthernetUDP, MIDI, ipMIDI2, 21930);
+IPMIDI_CREATE_INSTANCE(EthernetUDP, MIDI2, 21929);
 ```
-will create a instance named `ipMIDI2` and is connected to port 21930.
+will create 2 instances named `ipMIDI2` and `MIDI2` and is connected to port 21929.
 
 ### Advanced
 ```cpp
