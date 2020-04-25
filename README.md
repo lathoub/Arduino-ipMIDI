@@ -21,9 +21,12 @@ void setup()
 {
    MIDI.begin(1);
 ...
+}
+
 void loop()
 {
    MIDI.read();
+...
 }
 ```
 will create a instance named `ipMIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
