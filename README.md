@@ -29,7 +29,7 @@ void loop()
 ...
 }
 ```
-will create 2 instances: `ipMIDI` and `MIDI` and is by default connected to port 21928 - and listens to incoming MIDI on channel 1.
+will create 2 instances: `ipMIDI` and `MIDI` and is connected to port 21928 - and listens to incoming MIDI on channel 1.
 
 ### Modified 
 ```cpp
@@ -46,7 +46,7 @@ will create 2 instances named `ipMIDI2` and `MIDI2` and is connected to port 219
 IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> ipMIDI3(21930);
 MIDI_NAMESPACE::MidiInterface<IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP>> MIDI3((IPMIDI_NAMESPACE::ipMidiTransport<EthernetUDP> &)ipMIDI3);
 ```
-will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is by default connected to port 21930.
+will create a instance named `ipMIDI3` (and underlaying MIDI object `MIDI3`) and is connected to port 21930.
 
 ## Tested boards/modules
 - ESP32
