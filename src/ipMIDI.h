@@ -26,12 +26,6 @@ public:
 
     void begin()
 	{
-        // if we were called very soon after the board was booted, we need to give the
-        // EthernetShield (WIZnet) some time to come up. Hence, we delay until millis() is at
-        // least 3000. This is necessary, so that if we need to add a service record directly
-        // after begin, the announce packet does not get lost in the bowels of the WIZnet chip.
-        while (millis() < 3000) delay(100);
-
         dataPort_.beginMulticast(ipMIDIMulticastAddr, port_);
 	}
 
