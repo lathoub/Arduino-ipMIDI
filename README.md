@@ -1,5 +1,5 @@
 # Arduino ipMIDI Transport 
-[![GitHub version](https://badge.fury.io/gh/lathoub%2FArduino-ipMIDI.svg)](https://badge.fury.io/gh/lathoub%2FArduino-ipMIDI)
+[![arduino-library-badge](https://www.ardu-badge.com/badge/ipMIDI.svg?)](https://www.ardu-badge.com/ipMIDI)[![GitHub version](https://badge.fury.io/gh/lathoub%2FArduino-ipMIDI.svg)](https://badge.fury.io/gh/lathoub%2FArduino-ipMIDI)
 
 This library implements the ipMIDI transport layer for the [FortySevenEffects Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library) 
 
