@@ -29,6 +29,11 @@ public:
         dataPort_.beginMulticast(ipMIDIMulticastAddr, port_);
 	}
 
+    void end()
+	{
+        dataPort_.stop();
+	}
+
 protected:
 	static const bool thruActivated = false;
 		
